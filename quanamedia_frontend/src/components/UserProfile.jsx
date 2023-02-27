@@ -7,6 +7,7 @@ import { userCreatedPinsQuery, userQuery, userSavedPinsQuery } from '../utils/da
 import { client } from '../client'
 import MasonryLayout from './MasonryLayout'
 import Spinner from './Spinner'
+import { fetchUser } from '../utils/fetchUser'
 
 const randomImage = 'https://source.unsplash.com/1600x900/?nature,photography,technology'
 
@@ -18,13 +19,16 @@ const UserProfile = () => {
   const [pins, setPins] = useState(null)
   const [text, setText] = useState('Created')
   const [activeBtn, setActiveBtn] = useState('created')
+  const [currentUser, setCurrentUser] = useState(null)
   const { userId } = useParams()
 
   const navigate = useNavigate()
 
   useEffect(() => {
-    const query = userQuery(userId)
+    const id = fetchUser()
+    setCurrentUser(id)
 
+    const query = userQuery(userId)
     client.fetch(query)
       .then((data) => {
         setUser(data[0])
@@ -78,7 +82,7 @@ const UserProfile = () => {
             />
             <h1 className='font-bold text-3xl text-center mt-3'>{user?.userName}</h1>
             <div className='absolute top-0 z-1 right-0 p-2'>
-              {userId === user?._id && (
+              {userId === currentUser?.sub && (
                 <button
                   type='button'
                   onClick={() => logout()}
